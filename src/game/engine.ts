@@ -1,6 +1,7 @@
 import type { GameState, Defender, Pathogen, Projectile, Effect, AtpDrop, DefenderType, PathogenType } from "./types";
 import { DEFENDERS, PATHOGENS, ROWS, COLS, CELL_W, CELL_H, GRID_OFFSET_X, GRID_OFFSET_Y, STARTING_ATP, ATP_AUTO_INTERVAL, INFLAMMATION_THRESHOLD, INFLAMMATION_SLOW, INFLAMMATION_ATP_PENALTY, WAVES } from "./config";
 import { cellCenter } from "./draw";
+import { playSound, stopBackground } from "./audio";
 
 let nextId = 1;
 const id = () => nextId++;
@@ -49,6 +50,7 @@ export function startWave(s: GameState, wave: number) {
   }
   // Sort by delay
   s.spawnQueue.sort((a, b) => a.delay - b.delay);
+  try { playSound("wave_start"); } catch (e) {}
 }
 
 export function placeDefender(s: GameState, type: DefenderType, row: number, col: number): boolean {
@@ -73,6 +75,7 @@ export function placeDefender(s: GameState, type: DefenderType, row: number, col
   });
   // Update inflammation immediately
   recomputeInflammation(s);
+  try { playSound("place"); } catch (e) {}
   return true;
 }
 
@@ -111,6 +114,7 @@ export function spawnPathogen(s: GameState, type: PathogenType, row: number) {
     burnTick: 0,
     pulse: 0,
   });
+  try { playSound("spawn"); } catch (e) {}
 }
 
 export function tick(s: GameState, dt: number) {
@@ -128,6 +132,8 @@ export function tick(s: GameState, dt: number) {
     s.inWave = false;
     if (s.wave >= WAVES.length) {
       s.status = "won";
+      try { playSound("win"); } catch (e) {}
+      try { stopBackground(); } catch (e) {}
       return;
     }
     s.atp += 75;
@@ -178,6 +184,7 @@ export function tick(s: GameState, dt: number) {
           color: proj.color,
         });
         proj.x = -9999;
+        try { playSound("hit"); } catch (e) {}
         break;
       }
     }
@@ -207,6 +214,7 @@ export function tick(s: GameState, dt: number) {
         duration: 400,
         color: "#ff6060",
       });
+      try { playSound("pathogen_die"); } catch (e) {}
       return false;
     }
     return true;
@@ -226,6 +234,7 @@ export function tick(s: GameState, dt: number) {
       for (const p of s.pathogens) {
         if (p.attackingId === d.id) p.attackingId = null;
       }
+      try { playSound("defender_die"); } catch (e) {}
       return false;
     }
     return true;
@@ -252,6 +261,8 @@ export function tick(s: GameState, dt: number) {
   for (const p of s.pathogens) {
     if (p.x < GRID_OFFSET_X - 20) {
       s.status = "lost";
+      try { playSound("lose"); } catch (e) {}
+      try { stopBackground(); } catch (e) {}
       return;
     }
   }
@@ -298,6 +309,7 @@ function updateDefender(s: GameState, d: Defender) {
             kind: "antibody",
             color: "#a8d8ff",
           });
+          try { playSound("defender_shoot"); } catch (e) {}
         }
       }
       break;
@@ -326,6 +338,7 @@ function updateDefender(s: GameState, d: Defender) {
           duration: 350,
           color: "#ff8080",
         });
+        try { playSound("defender_melee"); } catch (e) {}
       }
       break;
     }
@@ -351,6 +364,7 @@ function updateDefender(s: GameState, d: Defender) {
             damage: 10,
             hit: new Set(),
           });
+          try { playSound("basophil_release"); } catch (e) {}
         }
       }
       // Apply spore cloud damage tick
@@ -401,6 +415,7 @@ function updateDefender(s: GameState, d: Defender) {
             color: "#7eb86b",
             radius: 50,
           });
+          try { playSound("monocyte_land"); } catch (e) {}
           d.hp = 0; // Single-use
         }
       }
@@ -429,6 +444,7 @@ function updateDefender(s: GameState, d: Defender) {
           color: "#ff8030",
           radius: 70,
         });
+        try { playSound("mine_explode"); } catch (e) {}
         d.hp = 0;
       }
       break;
@@ -453,6 +469,7 @@ function updateDefender(s: GameState, d: Defender) {
               color: "#fff066",
             });
           }
+          try { playSound("defender_shoot"); } catch (e) {}
         }
       }
       break;
@@ -480,6 +497,7 @@ function updateDefender(s: GameState, d: Defender) {
           radius: COLS * CELL_W / 2 + 50,
         });
         d.hp = 0;
+        try { playSound("platelet_explode"); } catch (e) {}
       }
       break;
     }
@@ -535,6 +553,7 @@ export function collectAtp(s: GameState, dropId: number) {
     color: "#ffd700",
     text: `${drop.amount}`,
   });
+  try { playSound("collect"); } catch (e) {}
 }
 
 export function clickAtCanvas(s: GameState, x: number, y: number): { collected: boolean } {

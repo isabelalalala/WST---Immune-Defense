@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import type { GameState, DefenderType } from "./types";
 import { DEFENDERS, PATHOGENS, CANVAS_W, CANVAS_H, WAVES, ROWS, INFLAMMATION_THRESHOLD } from "./config";
 import { createInitialState, tick, startWave, clickAtCanvas, hoverAtCanvas, canPlaceAt } from "./engine";
+import { enableAudio, playSound, playBackground, stopBackground } from "./audio";
 import {
   drawBackground,
   drawDefender,
@@ -106,19 +107,25 @@ export function Game() {
     if (s.atp < DEFENDERS[type].cost) return;
     s.selectedType = s.selectedType === type ? null : type;
     force((x) => (x + 1) % 100000);
+    try { playSound("ui_click"); } catch (e) {}
   };
 
   const startGame = () => {
     const s = stateRef.current;
+    // Enable audio on first user gesture
+    try { enableAudio(); playSound("ui_click"); } catch (e) {}
     s.status = "playing";
     startWave(s, 1);
+    try { playBackground(); } catch (e) {}
     force((x) => (x + 1) % 100000);
   };
 
   const restartGame = () => {
+    try { enableAudio(); playSound("ui_click"); } catch (e) {}
     stateRef.current = createInitialState();
     stateRef.current.status = "playing";
     startWave(stateRef.current, 1);
+    try { playBackground(); } catch (e) {}
     force((x) => (x + 1) % 100000);
   };
 
