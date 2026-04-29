@@ -1,6 +1,6 @@
 # Immune Defense
 
-A Plants vs. Zombies-style biological tower defense game played in the bloodstream. Deploy white blood cells along five lanes of arteries to fend off pathogens — but watch out for inflammation!
+A biological tower defense game played in the bloodstream. Deploy white blood cells along five lanes of arteries to fend off pathogens — but watch out for inflammation!
 
 Built with React, TypeScript, Vite, Tailwind CSS, and HTML5 Canvas.
 
