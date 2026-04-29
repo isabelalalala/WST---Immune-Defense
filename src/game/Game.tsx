@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import type { GameState, DefenderType } from "./types";
 import { DEFENDERS, PATHOGENS, CANVAS_W, CANVAS_H, WAVES, ROWS, INFLAMMATION_THRESHOLD } from "./config";
-import { createInitialState, tick, startWave, clickAtCanvas, hoverAtCanvas, canPlaceAt } from "./engine";
-import { enableAudio, playSound, playBackground, stopBackground } from "./audio";
+import { createInitialState, tick, startWave, clickAtCanvas, hoverAtCanvas, canPlaceAt, recomputeInflammation } from "./engine";
+import { enableAudio, playSound, playBackground, stopBackground, muteAudio, unmuteAudio, isAudioMuted } from "./audio";
 import {
   drawBackground,
   drawDefender,
@@ -13,13 +13,17 @@ import {
   drawHoverCell,
   drawDefenderShape,
 } from "./draw";
-import { AlertTriangle, Zap, Heart, Shield } from "lucide-react";
+import { AlertTriangle, Zap, Heart, Shield, Syringe } from "lucide-react";
 
 export function Game() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const stateRef = useRef<GameState>(createInitialState());
   const [, force] = useState(0);
   const [showHelp, setShowHelp] = useState(false);
+  const [showSettings, setShowSettings] = useState(false);
+  const [muted, setMuted] = useState<boolean>(isAudioMuted());
+  const [shouldUnpauseOnClose, setShouldUnpauseOnClose] = useState(false);
+  const [shoveMode, setShoveMode] = useState(false);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -84,10 +88,29 @@ export function Game() {
     const rect = canvas.getBoundingClientRect();
     const scaleX = canvas.width / rect.width;
     const scaleY = canvas.height / rect.height;
-    const x = (e.clientX - rect.left) * scaleX;
-    const y = (e.clientY - rect.top) * scaleY;
-    clickAtCanvas(stateRef.current, x, y);
-    force((x) => (x + 1) % 100000);
+      const x = (e.clientX - rect.left) * scaleX;
+      const y = (e.clientY - rect.top) * scaleY;
+      // If shove mode, try to remove defender under cursor
+      hoverAtCanvas(stateRef.current, x, y);
+      const hovered = stateRef.current.hoveredCell;
+      if (shoveMode && hovered && stateRef.current.status === "playing") {
+        const row = hovered.row;
+        const col2 = hovered.col;
+        const defenderIndex = stateRef.current.defenders.findIndex((d) => d.row === row && d.col === col2);
+        if (defenderIndex >= 0) {
+          const def = stateRef.current.defenders[defenderIndex];
+          const refund = Math.floor((DEFENDERS[def.type].cost || 0) / 2);
+          stateRef.current.atp += refund;
+          stateRef.current.defenders.splice(defenderIndex, 1);
+          recomputeInflammation(stateRef.current);
+          try { playSound("ui_click"); } catch (e) {}
+          force((x) => (x + 1) % 100000);
+          return;
+        }
+      }
+
+      clickAtCanvas(stateRef.current, x, y);
+      force((x) => (x + 1) % 100000);
   };
 
   const handleMove = (e: React.MouseEvent<HTMLCanvasElement>) => {
@@ -190,12 +213,53 @@ export function Game() {
               {s.wave === 0 ? "Start Wave 1" : `Begin Wave ${s.wave + 1}`}
             </button>
           )}
-          <button
-            onClick={() => setShowHelp(true)}
-            className="px-3 py-1.5 rounded-md text-sm border border-border bg-muted/40 hover:bg-muted text-muted-foreground hover:text-foreground transition"
-          >
-            How to play
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => {
+                stateRef.current.paused = !stateRef.current.paused;
+                if (stateRef.current.paused) {
+                  try { stopBackground(); } catch (e) {}
+                } else {
+                  try { playBackground(); } catch (e) {}
+                }
+                try { playSound("ui_click"); } catch (e) {}
+                force((x) => (x + 1) % 100000);
+              }}
+              className="px-3 py-1.5 rounded-md text-sm border border-border bg-muted/40 hover:bg-muted text-muted-foreground hover:text-foreground transition"
+            >
+              {stateRef.current.paused ? "Resume" : "Pause"}
+            </button>
+
+            <button
+              onClick={() => {
+                if (!stateRef.current.paused) {
+                  stateRef.current.paused = true;
+                  setShouldUnpauseOnClose(true);
+                }
+                setShowHelp(true);
+                try { playSound("ui_click"); } catch (e) {}
+                force((x) => (x + 1) % 100000);
+              }}
+              className="px-3 py-1.5 rounded-md text-sm border border-border bg-muted/40 hover:bg-muted text-muted-foreground hover:text-foreground transition"
+            >
+              How to play
+            </button>
+
+            <button
+              onClick={() => {
+                if (!stateRef.current.paused) {
+                  stateRef.current.paused = true;
+                  setShouldUnpauseOnClose(true);
+                }
+                setShowSettings(true);
+                try { playSound("ui_click"); } catch (e) {}
+                force((x) => (x + 1) % 100000);
+              }}
+              className="px-3 py-1.5 rounded-md text-sm border border-border bg-muted/40 hover:bg-muted text-muted-foreground hover:text-foreground transition"
+            >
+              Settings
+            </button>
+          </div>
         </div>
       </header>
 
@@ -274,45 +338,102 @@ export function Game() {
 
       {/* Bottom defender deck */}
       <div className="p-4 bg-card/80 backdrop-blur border-t border-border z-10">
-        <div className="flex gap-3 justify-center flex-wrap">
-          {(Object.keys(DEFENDERS) as DefenderType[]).map((type) => {
-            const cfg = DEFENDERS[type];
-            const cooldown = (s.cooldowns[type] ?? 0) - s.time;
-            const onCooldown = cooldown > 0;
-            const tooExpensive = s.atp < cfg.cost;
-            const disabled = onCooldown || tooExpensive;
-            const selected = s.selectedType === type;
-            return (
-              <button
-                key={type}
-                onClick={() => selectDefender(type)}
-                disabled={disabled}
-                className={`card-defender relative rounded-lg p-2 w-24 text-left ${selected ? "selected" : ""} ${disabled ? "disabled" : ""}`}
-                title={cfg.description}
-              >
-                <div className="h-14 flex items-center justify-center relative">
-                  <DefenderIcon type={type} />
-                </div>
-                <div className="text-xs font-semibold text-foreground truncate">{cfg.name}</div>
-                <div className="flex items-center gap-1 mt-0.5">
-                  <Zap className="w-3 h-3 text-amber-400" fill="currentColor" />
-                  <span className={`text-xs font-mono font-bold ${tooExpensive ? "text-rose-400" : "text-amber-300"}`}>
-                    {cfg.cost}
-                  </span>
-                </div>
-                {onCooldown && (
-                  <div className="cooldown-overlay rounded-lg">
-                    <span className="text-sm font-bold text-white">{Math.ceil(cooldown / 1000)}s</span>
+        <div className="flex items-start justify-between gap-4">
+          <div className="flex-1 flex items-center gap-3 justify-center flex-wrap">
+            <button
+              onClick={() => {
+                setShoveMode((v) => !v);
+                try { playSound("ui_click"); } catch (e) {}
+                force((x) => (x + 1) % 100000);
+              }}
+              title="Inject (remove defenders)"
+              className={`card-defender relative rounded-lg p-2 w-24 text-left flex flex-col items-center justify-center ${shoveMode ? "selected" : ""}`}
+            >
+              <div className="h-14 flex items-center justify-center relative">
+                <Syringe className="w-8 h-8 text-rose-400" />
+              </div>
+              <div className="text-xs font-semibold text-foreground truncate">INJECT</div>
+            </button>
+            {(Object.keys(DEFENDERS) as DefenderType[]).map((type) => {
+              const cfg = DEFENDERS[type];
+              const cooldown = (s.cooldowns[type] ?? 0) - s.time;
+              const onCooldown = cooldown > 0;
+              const tooExpensive = s.atp < cfg.cost;
+              const disabled = onCooldown || tooExpensive;
+              const selected = s.selectedType === type;
+              return (
+                <button
+                  key={type}
+                  onClick={() => selectDefender(type)}
+                  disabled={disabled}
+                  className={`card-defender relative rounded-lg p-2 w-24 text-left ${selected ? "selected" : ""} ${disabled ? "disabled" : ""}`}
+                  title={cfg.description}
+                >
+                  <div className="h-14 flex items-center justify-center relative">
+                    <DefenderIcon type={type} />
                   </div>
-                )}
-              </button>
-            );
-          })}
+                  <div className="text-xs font-semibold text-foreground truncate">{cfg.name}</div>
+                  <div className="flex items-center gap-1 mt-0.5">
+                    <Zap className="w-3 h-3 text-amber-400" fill="currentColor" />
+                    <span className={`text-xs font-mono font-bold ${tooExpensive ? "text-rose-400" : "text-amber-300"}`}>
+                      {cfg.cost}
+                    </span>
+                  </div>
+                  {onCooldown && (
+                    <div className="cooldown-overlay rounded-lg">
+                      <span className="text-sm font-bold text-white">{Math.ceil(cooldown / 1000)}s</span>
+                    </div>
+                  )}
+                </button>
+              );
+            })}
+          </div>
         </div>
       </div>
 
       {/* Help modal */}
-      {showHelp && <HelpModal onClose={() => setShowHelp(false)} />}
+      {showHelp && (
+        <HelpModal
+          onClose={() => {
+            setShowHelp(false);
+            if (shouldUnpauseOnClose) {
+              stateRef.current.paused = false;
+              setShouldUnpauseOnClose(false);
+              force((x) => (x + 1) % 100000);
+            }
+          }}
+        />
+      )}
+
+      {showSettings && (
+        <SettingsModal
+          onClose={() => {
+            setShowSettings(false);
+            if (shouldUnpauseOnClose) {
+              stateRef.current.paused = false;
+              setShouldUnpauseOnClose(false);
+              force((x) => (x + 1) % 100000);
+            }
+          }}
+          muted={muted}
+          onToggleMute={() => {
+            try { playSound("ui_click"); } catch (e) {}
+            if (muted) {
+              unmuteAudio();
+              setMuted(false);
+            } else {
+              muteAudio();
+              setMuted(true);
+            }
+          }}
+          onRestart={() => {
+            try { playSound("ui_click"); } catch (e) {}
+            restartGame();
+            setShowSettings(false);
+          }}
+        />
+      )}
+      
     </div>
   );
 }
@@ -388,6 +509,50 @@ function HelpModal({ onClose }: { onClose: () => void }) {
               })}
             </ul>
           </section>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function SettingsModal({ onClose, muted, onToggleMute, onRestart }: { onClose: () => void; muted: boolean; onToggleMute: () => void; onRestart: () => void }) {
+  return (
+    <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4" onClick={onClose}>
+      <div
+        className="max-w-sm w-full bg-card border border-border rounded-xl p-6 shadow-2xl"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-2xl font-bold">Settings</h2>
+          <button onClick={onClose} className="text-muted-foreground hover:text-foreground text-xl">×</button>
+        </div>
+
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <div className="font-semibold">Audio</div>
+              <div className="text-sm text-muted-foreground">Toggle game sounds and music</div>
+            </div>
+            <button
+              onClick={onToggleMute}
+              className="px-3 py-1.5 rounded-md text-sm border border-border bg-muted/40 hover:bg-muted text-muted-foreground hover:text-foreground transition"
+            >
+              {muted ? "Unmute" : "Mute"}
+            </button>
+          </div>
+
+          <div className="flex items-center justify-between">
+            <div>
+              <div className="font-semibold">Restart</div>
+              <div className="text-sm text-muted-foreground">Restart the current run</div>
+            </div>
+            <button
+              onClick={onRestart}
+              className="px-3 py-1.5 rounded-md text-sm border border-border bg-rose-600 hover:bg-rose-500 text-white transition"
+            >
+              Restart
+            </button>
+          </div>
         </div>
       </div>
     </div>

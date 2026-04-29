@@ -128,4 +128,6 @@ export interface GameState {
   time: number;
   lastAtpAuto: number;
   hoveredCell: { row: number; col: number } | null;
+  paused: boolean;
+  awaitingNextWave?: boolean;
 }

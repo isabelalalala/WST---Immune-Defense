@@ -29,6 +29,8 @@ export function createInitialState(): GameState {
     time: 0,
     lastAtpAuto: 0,
     hoveredCell: null,
+    paused: false,
+    awaitingNextWave: false,
   };
 }
 
@@ -118,7 +120,7 @@ export function spawnPathogen(s: GameState, type: PathogenType, row: number) {
 }
 
 export function tick(s: GameState, dt: number) {
-  if (s.status !== "playing") return;
+  if (s.status !== "playing" || s.paused) return;
   s.time += dt;
 
   // Wave spawning
@@ -136,7 +138,9 @@ export function tick(s: GameState, dt: number) {
       try { stopBackground(); } catch (e) {}
       return;
     }
-    s.atp += 75;
+    // Pause and await player to begin next wave; don't auto-award ATP to increase difficulty
+    s.awaitingNextWave = true;
+    s.paused = true;
     s.effects.push({
       id: id(),
       type: "text",
@@ -145,7 +149,7 @@ export function tick(s: GameState, dt: number) {
       age: 0,
       duration: 2000,
       color: "#ffd700",
-      text: `Wave ${s.wave} cleared! +75 ATP`,
+      text: `Wave ${s.wave} cleared!`,
     });
   }
 

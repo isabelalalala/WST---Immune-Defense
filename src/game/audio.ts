@@ -1,5 +1,6 @@
 let audioCtx: AudioContext | null = null;
 let audioEnabled = false;
+let audioMuted = false;
 
 function ensureCtx() {
   if (!audioCtx && typeof window !== "undefined") {
@@ -19,9 +20,22 @@ export function isAudioEnabled() {
   return audioEnabled;
 }
 
+export function muteAudio() {
+  audioMuted = true;
+  stopBackground();
+}
+
+export function unmuteAudio() {
+  audioMuted = false;
+}
+
+export function isAudioMuted() {
+  return audioMuted;
+}
+
 function playOscillator(freq: number, type: OscillatorType, duration = 0.12, volume = 0.12) {
   const ctx = ensureCtx();
-  if (!ctx || !audioEnabled) return;
+  if (!ctx || !audioEnabled || audioMuted) return;
   const o = ctx.createOscillator();
   const g = ctx.createGain();
   o.type = type;
@@ -38,7 +52,7 @@ function playOscillator(freq: number, type: OscillatorType, duration = 0.12, vol
 
 function playNoise(duration = 0.15, volume = 0.2) {
   const ctx = ensureCtx();
-  if (!ctx || !audioEnabled) return;
+  if (!ctx || !audioEnabled || audioMuted) return;
   const bufferSize = ctx.sampleRate * duration;
   const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
   const data = buffer.getChannelData(0);
@@ -161,7 +175,7 @@ export function isBackgroundPlaying() {
 
 function playNoteAtTime(freq: number, type: OscillatorType, dur = 0.3, vol = 0.12) {
   const ctx = ensureCtx();
-  if (!ctx || !audioEnabled) return;
+  if (!ctx || !audioEnabled || audioMuted) return;
   const o = ctx.createOscillator();
   const g = ctx.createGain();
   o.type = type;
@@ -178,7 +192,7 @@ function playNoteAtTime(freq: number, type: OscillatorType, dur = 0.3, vol = 0.1
 
 function playChord(notes: number[], type: OscillatorType, dur = 0.6, vol = 0.12) {
   const ctx = ensureCtx();
-  if (!ctx || !audioEnabled) return;
+  if (!ctx || !audioEnabled || audioMuted) return;
   for (const n of notes) {
     const o = ctx.createOscillator();
     const g = ctx.createGain();
@@ -197,7 +211,7 @@ function playChord(notes: number[], type: OscillatorType, dur = 0.6, vol = 0.12)
 
 function playArpeggio(notes: number[], type: OscillatorType, step = 0.08, durEach = 0.12, vol = 0.12) {
   const ctx = ensureCtx();
-  if (!ctx || !audioEnabled) return;
+  if (!ctx || !audioEnabled || audioMuted) return;
   let t = 0;
   for (const n of notes) {
     const o = ctx.createOscillator();
@@ -220,6 +234,7 @@ export function playBackground(volume = 0.18) {
   const ctx = ensureCtx();
   if (!ctx) return;
   if (!audioEnabled) enableAudio();
+  if (audioMuted) return;
   if (bgPlaying) return;
   bgGain = ctx.createGain();
   bgGain.gain.value = volume;
