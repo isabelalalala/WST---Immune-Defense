@@ -195,19 +195,13 @@ function LandingPage({ onPlay, onHelp, onSettings }: {
         transform: visible ? "translateY(0)" : "translateY(28px)",
         transition: "opacity 0.7s ease, transform 0.7s ease",
       }}>
-        {/* Logo card */}
+        {/* Logo + Title — no card box */}
         <div style={{
-          width: "100%", marginBottom: "1.5rem",
-          borderRadius: "1.75rem",
-          border: "2px solid #7a1c1c",
-          background: "rgba(50,8,12,0.88)",
-          backdropFilter: "blur(10px)",
-          boxShadow: "0 0 60px rgba(200,20,40,0.2), 0 8px 40px rgba(0,0,0,0.55)",
           display: "flex", flexDirection: "column", alignItems: "center",
-          padding: "2rem 1.5rem",
+          marginBottom: "2rem",
         }}>
           {/* Logo orb */}
-          <div style={{ position: "relative", marginBottom: "1.25rem" }}>
+          <div style={{ position: "relative", marginBottom: "1.5rem" }}>
             <div style={{
               width: "96px", height: "96px", borderRadius: "50%",
               display: "flex", alignItems: "center", justifyContent: "center",
@@ -235,18 +229,18 @@ function LandingPage({ onPlay, onHelp, onSettings }: {
           </div>
 
           {/* Title */}
-          <div style={{ lineHeight: 1, textAlign: "center", marginBottom: "0.5rem" }}>
+          <div style={{ lineHeight: 0.9, textAlign: "center", marginBottom: "0.6rem" }}>
             <div style={{
-              fontSize: "3.8rem", fontWeight: 900, letterSpacing: "0.12em",
-              color: "#fff", textShadow: "0 0 30px rgba(255,80,100,0.5)",
+              fontSize: "5.5rem", fontWeight: 900, letterSpacing: "0.08em",
+              color: "#fff", textShadow: "0 0 40px rgba(255,80,100,0.6)",
               fontFamily: "'Cinzel Decorative', serif",
             }}>IMMUNE</div>
             <div style={{
-              fontSize: "4.4rem", fontWeight: 900, letterSpacing: "0.06em",
+              fontSize: "6.2rem", fontWeight: 900, letterSpacing: "0.04em",
               background: "linear-gradient(135deg,#ff6680,#ff2244)",
               WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent",
               fontFamily: "'Cinzel Decorative', serif",
-              filter: "drop-shadow(0 0 14px rgba(255,50,80,0.6))",
+              filter: "drop-shadow(0 0 20px rgba(255,50,80,0.7))",
             }}>DEFENSE</div>
           </div>
 
@@ -460,7 +454,9 @@ function Toggle({ on, onToggle }: { on: boolean; onToggle: () => void }) {
 function SettingsPage({ onBack }: { onBack: () => void }) {
   const [musicOn, setMusicOn] = useState(!isMusicMuted());
   const [sfxOn, setSfxOn] = useState(!isSfxMuted());
-  const [difficulty, setDifficulty] = useState<"Normal"|"Hard"|"Brutal">("Normal");
+  const [difficulty, setDifficulty] = useState<"Normal"|"Hard"|"Brutal">(
+    () => (localStorage.getItem("difficulty") as "Normal"|"Hard"|"Brutal") ?? "Normal"
+  );
   const [visible, setVisible] = useState(false);
   useEffect(() => { const t = setTimeout(() => setVisible(true), 60); return () => clearTimeout(t); }, []);
 
@@ -560,7 +556,11 @@ function SettingsPage({ onBack }: { onBack: () => void }) {
               {(["Normal","Hard","Brutal"] as const).map((d) => (
                 <button
                   key={d}
-                  onClick={() => setDifficulty(d)}
+                  onClick={() => {
+                    setDifficulty(d);
+                    localStorage.setItem("difficulty", d);
+                    playSound("ui_click");
+                  }}
                   style={{
                     flex: 1, padding: "0.5rem 0",
                     borderRadius: "0.6rem",
