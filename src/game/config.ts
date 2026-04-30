@@ -9,7 +9,7 @@ export const GRID_OFFSET_Y = 80;
 export const CANVAS_W = GRID_OFFSET_X + COLS * CELL_W + 30;
 export const CANVAS_H = GRID_OFFSET_Y + ROWS * CELL_H + 20;
 
-export const STARTING_ATP = 150;
+export let STARTING_ATP = 150;
 export const ATP_AUTO_INTERVAL = 8000;
 export const INFLAMMATION_THRESHOLD = 3;
 export const INFLAMMATION_SLOW = 0.5;
@@ -207,3 +207,57 @@ export const WAVES: WaveSpawn[][] = [
     { type: "prion", count: 2, delay: 24000, spacing: 4000 },
   ],
 ];
+
+// ─── Difficulty System ────────────────────────────────────────────────────────
+export type Difficulty = "Normal" | "Hard" | "Brutal";
+
+export function getDifficulty(): Difficulty {
+  if (typeof localStorage === "undefined") return "Normal";
+  return (localStorage.getItem("difficulty") as Difficulty) ?? "Normal";
+}
+
+// Frozen base snapshots — ensures applyDifficulty is always idempotent
+const _basePathogens = Object.fromEntries(
+  Object.entries(PATHOGENS).map(([k, v]) => [k, { ...v }])
+) as typeof PATHOGENS;
+
+const _baseWaves: WaveSpawn[][] = WAVES.map((wave) =>
+  wave.map((spawn) => ({ ...spawn }))
+);
+
+const _baseStartingAtp = 150;
+
+const DIFF_MULT: Record<Difficulty, {
+  hp: number; speed: number; damage: number; reward: number;
+  atp: number; spacing: number; extraCount: number;
+}> = {
+  Normal: { hp: 1,    speed: 1,    damage: 1,    reward: 1,    atp: 1,    spacing: 1,    extraCount: 0 },
+  Hard:   { hp: 1.4,  speed: 1.2,  damage: 1.3,  reward: 0.85, atp: 0.82, spacing: 0.82, extraCount: 1 },
+  Brutal: { hp: 1.85, speed: 1.5,  damage: 1.6,  reward: 0.65, atp: 0.6,  spacing: 0.65, extraCount: 3 },
+};
+
+export function applyDifficulty(diff: Difficulty = getDifficulty()) {
+  const m = DIFF_MULT[diff];
+
+  // Scale pathogen stats
+  for (const key of Object.keys(PATHOGENS) as PathogenType[]) {
+    const base = _basePathogens[key];
+    PATHOGENS[key].hp     = Math.round(base.hp     * m.hp);
+    PATHOGENS[key].speed  = Math.round(base.speed  * m.speed * 10) / 10;
+    PATHOGENS[key].damage = Math.round(base.damage  * m.damage);
+    PATHOGENS[key].reward = Math.round(base.reward  * m.reward);
+  }
+
+  // Scale starting ATP (live binding — engine.ts sees this change)
+  STARTING_ATP = Math.round(_baseStartingAtp * m.atp);
+
+  // Scale wave spawn timing and enemy count
+  for (let wi = 0; wi < WAVES.length; wi++) {
+    for (let si = 0; si < WAVES[wi].length; si++) {
+      const base = _baseWaves[wi][si];
+      WAVES[wi][si].spacing = Math.max(600, Math.round(base.spacing * m.spacing));
+      WAVES[wi][si].delay   = Math.max(400, Math.round(base.delay   * m.spacing));
+      WAVES[wi][si].count   = base.count + m.extraCount;
+    }
+  }
+}

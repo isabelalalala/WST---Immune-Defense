@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import type { GameState, DefenderType } from "./types";
-import { DEFENDERS, PATHOGENS, CANVAS_W, CANVAS_H, WAVES, ROWS, INFLAMMATION_THRESHOLD } from "./config";
+import { DEFENDERS, PATHOGENS, CANVAS_W, CANVAS_H, WAVES, ROWS, INFLAMMATION_THRESHOLD, applyDifficulty, getDifficulty, type Difficulty } from "./config";
 import { createInitialState, tick, startWave, clickAtCanvas, hoverAtCanvas, canPlaceAt, recomputeInflammation } from "./engine";
 import { enableAudio, playSound, playBackground, stopBackground, muteAudio, unmuteAudio, isAudioMuted } from "./audio";
 import {
@@ -22,8 +22,14 @@ export function Game() {
   const [showHelp, setShowHelp] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
   const [muted, setMuted] = useState<boolean>(isAudioMuted());
+  const [difficulty, setDifficultyState] = useState<Difficulty>(getDifficulty());
   const [shouldUnpauseOnClose, setShouldUnpauseOnClose] = useState(false);
   const [shoveMode, setShoveMode] = useState(false);
+
+  // Start music as soon as game opens
+  useEffect(() => {
+    try { enableAudio(); playBackground(); } catch (e) {}
+  }, []);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -135,6 +141,8 @@ export function Game() {
 
   const startGame = () => {
     const s = stateRef.current;
+    // Apply difficulty scaling before creating the game state
+    applyDifficulty();
     // Enable audio on first user gesture
     try { enableAudio(); playSound("ui_click"); } catch (e) {}
     s.status = "playing";
@@ -145,6 +153,7 @@ export function Game() {
 
   const restartGame = () => {
     try { enableAudio(); playSound("ui_click"); } catch (e) {}
+    applyDifficulty();
     stateRef.current = createInitialState();
     stateRef.current.status = "playing";
     startWave(stateRef.current, 1);
@@ -431,6 +440,12 @@ export function Game() {
             restartGame();
             setShowSettings(false);
           }}
+          difficulty={difficulty}
+          onDifficultyChange={(d) => {
+            localStorage.setItem("difficulty", d);
+            setDifficultyState(d);
+            try { playSound("ui_click"); } catch (e) {}
+          }}
         />
       )}
       
@@ -515,7 +530,19 @@ function HelpModal({ onClose }: { onClose: () => void }) {
   );
 }
 
-function SettingsModal({ onClose, muted, onToggleMute, onRestart }: { onClose: () => void; muted: boolean; onToggleMute: () => void; onRestart: () => void }) {
+function SettingsModal({ onClose, muted, onToggleMute, onRestart, difficulty, onDifficultyChange }: {
+  onClose: () => void;
+  muted: boolean;
+  onToggleMute: () => void;
+  onRestart: () => void;
+  difficulty: Difficulty;
+  onDifficultyChange: (d: Difficulty) => void;
+}) {
+  const diffColors: Record<Difficulty, string> = {
+    Normal: "#22c55e",
+    Hard:   "#f59e0b",
+    Brutal: "#ef4444",
+  };
   return (
     <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4" onClick={onClose}>
       <div
@@ -539,6 +566,33 @@ function SettingsModal({ onClose, muted, onToggleMute, onRestart }: { onClose: (
             >
               {muted ? "Unmute" : "Mute"}
             </button>
+          </div>
+
+          {/* Difficulty */}
+          <div>
+            <div className="font-semibold mb-1">Difficulty</div>
+            <div className="text-xs text-muted-foreground mb-2">Takes effect on next restart</div>
+            <div className="flex gap-2">
+              {(["Normal", "Hard", "Brutal"] as Difficulty[]).map((d) => (
+                <button
+                  key={d}
+                  onClick={() => onDifficultyChange(d)}
+                  style={{
+                    flex: 1,
+                    padding: "0.4rem 0",
+                    borderRadius: "0.5rem",
+                    fontSize: "0.75rem",
+                    fontWeight: 700,
+                    cursor: "pointer",
+                    transition: "all 0.15s",
+                    background: difficulty === d ? diffColors[d] + "33" : "transparent",
+                    color: difficulty === d ? diffColors[d] : "#664455",
+                    border: `2px solid ${difficulty === d ? diffColors[d] : "#3a0810"}`,
+                    boxShadow: difficulty === d ? `0 0 12px ${diffColors[d]}55` : "none",
+                  }}
+                >{d}</button>
+              ))}
+            </div>
           </div>
 
           <div className="flex items-center justify-between">
