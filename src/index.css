@@ -148,3 +148,22 @@
   justify-content: center;
   pointer-events: none;
 }
+/* Enable the scrollbar for the Help container */
+.how-to-play-scroll-container::-webkit-scrollbar {
+  width: 8px;
+}
+
+.how-to-play-scroll-container::-webkit-scrollbar-track {
+  background: rgba(20, 2, 6, 0.5);
+  border-radius: 10px;
+}
+
+.how-to-play-scroll-container::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #aa2233, #6b0011);
+  border-radius: 10px;
+}
+
+.how-to-play-scroll-container {
+  scrollbar-width: thin;
+  scrollbar-color: #aa2233 rgba(20, 2, 6, 0.5);
+}
