@@ -4,128 +4,550 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Immune Defense</title>
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Cinzel:wght@400;600&family=Lato:wght@300;400&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet"/>
   <style>
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
     :root {
-      --crimson: #e8182f; --deep: #0a0000; --dark: #120003;
-      --glow: rgba(220,20,40,0.5); --text: #f5e6e6; --muted: #a07070;
+      --bg: #050208;
+      --surface: #0d0812;
+      --panel: #120f1a;
+      --accent: #c9183a;
+      --accent2: #7c3cff;
+      --gold: #e8b84b;
+      --text: #f0eaf8;
+      --muted: #7a6e8a;
+      --dim: #2e2640;
+      --border: rgba(200,180,255,0.08);
+      --glow-r: rgba(201,24,58,0.35);
+      --glow-p: rgba(124,60,255,0.25);
     }
+
     html { scroll-behavior: smooth; }
-    body { background: var(--deep); color: var(--text); font-family: 'Lato', sans-serif; font-weight: 300; overflow-x: hidden; }
-    nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; display: flex; justify-content: space-between; align-items: center; padding: 1.2rem 3rem; background: linear-gradient(to bottom, rgba(10,0,0,0.95), transparent); backdrop-filter: blur(4px); }
-    .nav-logo { font-family: 'Cinzel', serif; font-size: 1rem; letter-spacing: 0.25em; color: var(--crimson); text-decoration: none; text-transform: uppercase; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      font-weight: 300;
+      overflow-x: hidden;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 1.1rem 3.5rem;
+      background: rgba(5,2,8,0.7);
+      backdrop-filter: blur(14px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-logo {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.78rem; letter-spacing: 0.25em;
+      color: var(--accent); text-decoration: none; text-transform: uppercase;
+      display: flex; align-items: center; gap: 0.6rem;
+    }
+    .nav-logo::before {
+      content: '';
+      width: 7px; height: 7px; border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 0 8px var(--accent);
+      animation: blink 2s ease-in-out infinite;
+    }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
     .nav-links { display: flex; gap: 2.5rem; list-style: none; }
-    .nav-links a { font-family: 'Cinzel', serif; font-size: 0.75rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--muted); text-decoration: none; transition: color 0.3s; }
+    .nav-links a {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.68rem; letter-spacing: 0.18em;
+      text-transform: uppercase; color: var(--muted);
+      text-decoration: none; transition: color 0.25s;
+    }
     .nav-links a:hover { color: var(--text); }
-    #home { min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; overflow: hidden; background: radial-gradient(ellipse 70% 60% at 50% 50%, #2a0008 0%, #0a0000 70%); }
-    .particles { position: absolute; inset: 0; pointer-events: none; }
-    .particle { position: absolute; border-radius: 50%; animation: float linear infinite; opacity: 0; }
-    @keyframes float { 0% { transform: translateY(110vh) scale(0); opacity: 0; } 10% { opacity: 0.6; } 90% { opacity: 0.3; } 100% { transform: translateY(-10vh) scale(1.2); opacity: 0; } }
-    .hero-icon { width: 64px; height: 64px; background: var(--crimson); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.8rem; box-shadow: 0 0 40px var(--glow), 0 0 80px rgba(200,0,30,0.3); margin-bottom: 1.5rem; animation: pulse 2.5s ease-in-out infinite; }
-    @keyframes pulse { 0%, 100% { box-shadow: 0 0 40px var(--glow), 0 0 80px rgba(200,0,30,0.3); } 50% { box-shadow: 0 0 60px var(--glow), 0 0 120px rgba(200,0,30,0.5); } }
-    .hero-title { font-family: 'Cinzel Decorative', serif; font-size: clamp(3rem, 8vw, 6.5rem); font-weight: 900; line-height: 0.9; text-align: center; letter-spacing: 0.05em; }
-    .hero-title span:first-child { display: block; color: var(--text); text-shadow: 0 0 60px rgba(255,200,200,0.3); }
-    .hero-title span:last-child { display: block; color: var(--crimson); text-shadow: 0 0 40px var(--glow); }
-    .hero-sub { font-family: 'Cinzel', serif; font-size: 0.7rem; letter-spacing: 0.5em; color: var(--muted); text-transform: uppercase; margin: 1.5rem 0 3rem; }
-    .hero-buttons { display: flex; flex-direction: column; gap: 0.75rem; align-items: center; }
-    .btn-play { display: inline-flex; align-items: center; gap: 0.75rem; padding: 1rem 3rem; background: var(--crimson); color: white; font-family: 'Cinzel', serif; font-size: 0.85rem; letter-spacing: 0.3em; text-transform: uppercase; text-decoration: none; clip-path: polygon(12px 0%, 100% 0%, calc(100% - 12px) 100%, 0% 100%); transition: background 0.3s, box-shadow 0.3s, transform 0.2s; box-shadow: 0 0 30px rgba(220,20,40,0.4); }
-    .btn-play:hover { background: #ff1f38; box-shadow: 0 0 50px rgba(220,20,40,0.7); transform: translateY(-2px); }
-    .btn-outline { display: inline-flex; align-items: center; padding: 0.75rem 2.5rem; background: transparent; color: var(--muted); font-family: 'Cinzel', serif; font-size: 0.75rem; letter-spacing: 0.3em; text-transform: uppercase; text-decoration: none; border: 1px solid rgba(160,80,80,0.3); transition: color 0.3s, border-color 0.3s; }
-    .btn-outline:hover { color: var(--text); border-color: rgba(220,20,40,0.5); }
-    #how-to-play { padding: 8rem 2rem; background: linear-gradient(to bottom, var(--deep), var(--dark), var(--deep)); }
-    .section-label { font-family: 'Cinzel', serif; font-size: 0.65rem; letter-spacing: 0.6em; color: var(--crimson); text-transform: uppercase; text-align: center; margin-bottom: 0.75rem; }
-    .section-title { font-family: 'Cinzel Decorative', serif; font-size: clamp(1.8rem, 4vw, 3rem); text-align: center; color: var(--text); }
-    .section-title em { color: var(--crimson); font-style: normal; }
-    .divider { width: 60px; height: 2px; background: var(--crimson); margin: 0.75rem auto 3rem; box-shadow: 0 0 10px var(--glow); }
-    .steps-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.5rem; max-width: 1000px; margin: 0 auto; }
-    .step-card { background: rgba(255,255,255,0.02); border: 1px solid rgba(200,20,40,0.15); padding: 2rem 1.5rem; transition: border-color 0.3s, background 0.3s; }
-    .step-card:hover { border-color: rgba(200,20,40,0.4); background: rgba(200,20,40,0.05); }
-    .step-num { font-family: 'Cinzel Decorative', serif; font-size: 2.5rem; font-weight: 900; color: rgba(200,20,40,0.2); line-height: 1; margin-bottom: 1rem; }
-    .step-icon { font-size: 1.5rem; margin-bottom: 0.75rem; }
-    .step-card h3 { font-family: 'Cinzel', serif; font-size: 0.9rem; letter-spacing: 0.1em; color: var(--text); margin-bottom: 0.75rem; text-transform: uppercase; }
-    .step-card p { font-size: 0.85rem; line-height: 1.7; color: var(--muted); }
-    #team { padding: 8rem 2rem; background: radial-gradient(ellipse 80% 50% at 50% 50%, #180005 0%, #080001 100%); }
-    .team-grid { display: flex; justify-content: center; gap: 3rem; flex-wrap: wrap; max-width: 800px; margin: 0 auto; }
-    .member-card { display: flex; flex-direction: column; align-items: center; text-align: center; padding: 2.5rem 2rem; background: rgba(255,255,255,0.02); border: 1px solid rgba(200,20,40,0.15); width: 280px; position: relative; transition: transform 0.3s, border-color 0.3s; }
-    .member-card::before { content: ''; position: absolute; top: 0; left: 50%; transform: translateX(-50%); width: 60px; height: 2px; background: var(--crimson); box-shadow: 0 0 10px var(--glow); }
-    .member-card:hover { transform: translateY(-6px); border-color: rgba(200,20,40,0.4); }
-    .member-avatar { width: 80px; height: 80px; border-radius: 50%; background: linear-gradient(135deg, #3a0010, #1a0005); border: 2px solid rgba(200,20,40,0.3); display: flex; align-items: center; justify-content: center; font-family: 'Cinzel Decorative', serif; font-size: 1.8rem; font-weight: 900; color: var(--crimson); margin-bottom: 1.25rem; box-shadow: 0 0 20px rgba(200,20,40,0.2); }
-    .member-name { font-family: 'Cinzel', serif; font-size: 1rem; letter-spacing: 0.1em; color: var(--text); margin-bottom: 0.4rem; text-transform: uppercase; }
-    .member-role { font-size: 0.75rem; letter-spacing: 0.2em; color: var(--crimson); text-transform: uppercase; margin-bottom: 1.25rem; }
-    .member-github { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1.2rem; border: 1px solid rgba(200,20,40,0.25); color: var(--muted); text-decoration: none; font-size: 0.75rem; letter-spacing: 0.1em; font-family: 'Cinzel', serif; transition: color 0.3s, border-color 0.3s; }
-    .member-github:hover { color: var(--text); border-color: rgba(200,20,40,0.6); }
-    .member-github svg { width: 14px; height: 14px; fill: currentColor; }
-    footer { text-align: center; padding: 3rem 2rem; border-top: 1px solid rgba(200,20,40,0.1); color: rgba(160,80,80,0.4); font-size: 0.75rem; letter-spacing: 0.2em; font-family: 'Cinzel', serif; }
-    footer span { color: var(--crimson); }
+
+    /* ── HERO ── */
+    #home {
+      min-height: 100vh;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      position: relative; overflow: hidden;
+      padding: 7rem 2rem 4rem;
+    }
+
+    .hero-bg {
+      position: absolute; inset: 0; pointer-events: none;
+      background:
+        radial-gradient(ellipse 60% 55% at 50% 42%, #1e0828 0%, transparent 70%),
+        radial-gradient(ellipse 40% 30% at 20% 80%, rgba(201,24,58,0.08) 0%, transparent 60%),
+        radial-gradient(ellipse 35% 25% at 80% 20%, rgba(124,60,255,0.07) 0%, transparent 60%);
+    }
+
+    /* animated cell membrane rings */
+    .rings {
+      position: absolute; inset: 0; pointer-events: none;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .ring {
+      position: absolute; border-radius: 50%; border: 1px solid;
+      animation: expand 6s ease-out infinite;
+      opacity: 0;
+    }
+    .ring:nth-child(1) { width:260px;height:260px; border-color:rgba(201,24,58,0.2); animation-delay:0s; }
+    .ring:nth-child(2) { width:420px;height:420px; border-color:rgba(124,60,255,0.12); animation-delay:1.5s; }
+    .ring:nth-child(3) { width:580px;height:580px; border-color:rgba(201,24,58,0.07); animation-delay:3s; }
+    .ring:nth-child(4) { width:740px;height:740px; border-color:rgba(124,60,255,0.05); animation-delay:4.5s; }
+    @keyframes expand {
+      0%   { transform: scale(0.6); opacity: 0; }
+      20%  { opacity: 1; }
+      100% { transform: scale(1.15); opacity: 0; }
+    }
+
+    /* floating micro-particles */
+    .motes { position: absolute; inset: 0; pointer-events: none; }
+    .mote {
+      position: absolute; border-radius: 50%;
+      animation: drift linear infinite;
+      opacity: 0;
+    }
+    @keyframes drift {
+      0%   { transform: translateY(0) scale(0.5); opacity: 0; }
+      10%  { opacity: 0.55; }
+      90%  { opacity: 0.2; }
+      100% { transform: translateY(-70px) scale(1); opacity: 0; }
+    }
+
+    .hero-eyebrow {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.65rem; letter-spacing: 0.55em;
+      text-transform: uppercase; color: var(--accent);
+      margin-bottom: 1.4rem;
+      display: flex; align-items: center; gap: 0.8rem;
+    }
+    .hero-eyebrow::before, .hero-eyebrow::after {
+      content: ''; flex: 1; max-width: 48px;
+      height: 1px; background: var(--accent); opacity: 0.5;
+    }
+
+    .hero-title {
+      font-family: 'DM Serif Display', serif;
+      font-size: clamp(3.8rem, 9vw, 8rem);
+      line-height: 0.93; text-align: center;
+      letter-spacing: -0.01em;
+      position: relative; z-index: 1;
+    }
+    .hero-title .line1 { color: var(--text); display: block; }
+    .hero-title .line2 {
+      display: block;
+      background: linear-gradient(135deg, #c9183a 0%, #7c3cff 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+      font-style: italic;
+    }
+
+    .hero-desc {
+      max-width: 480px; text-align: center; margin: 2rem 0 2.8rem;
+      font-size: 0.9rem; line-height: 1.8; color: var(--muted);
+      position: relative; z-index: 1;
+    }
+
+    .hero-cta { display: flex; gap: 1rem; align-items: center; position: relative; z-index: 1; }
+
+    .btn-primary {
+      display: inline-flex; align-items: center; gap: 0.6rem;
+      padding: 0.85rem 2.2rem;
+      background: var(--accent);
+      color: #fff;
+      font-family: 'Space Mono', monospace;
+      font-size: 0.72rem; letter-spacing: 0.2em;
+      text-transform: uppercase; text-decoration: none;
+      border: none; cursor: pointer;
+      position: relative; overflow: hidden;
+      transition: transform 0.2s, box-shadow 0.3s;
+      clip-path: polygon(10px 0%, 100% 0%, calc(100% - 10px) 100%, 0% 100%);
+    }
+    .btn-primary::before {
+      content: ''; position: absolute; inset: 0;
+      background: rgba(255,255,255,0.12);
+      transform: translateX(-110%) skewX(-15deg);
+      transition: transform 0.4s;
+    }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 12px 40px rgba(201,24,58,0.5); }
+    .btn-primary:hover::before { transform: translateX(110%) skewX(-15deg); }
+
+    .btn-ghost {
+      display: inline-flex; align-items: center; gap: 0.6rem;
+      padding: 0.85rem 2rem;
+      background: transparent;
+      color: var(--muted);
+      font-family: 'Space Mono', monospace;
+      font-size: 0.72rem; letter-spacing: 0.2em;
+      text-transform: uppercase; text-decoration: none;
+      border: 1px solid var(--dim);
+      transition: color 0.25s, border-color 0.25s;
+    }
+    .btn-ghost:hover { color: var(--text); border-color: rgba(124,60,255,0.4); }
+
+    .hero-stats {
+      display: flex; gap: 3rem; margin-top: 4rem;
+      position: relative; z-index: 1;
+    }
+    .stat { text-align: center; }
+    .stat-num {
+      font-family: 'DM Serif Display', serif; font-size: 2.2rem;
+      color: var(--text); line-height: 1;
+    }
+    .stat-label {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.58rem; letter-spacing: 0.3em;
+      text-transform: uppercase; color: var(--muted);
+      margin-top: 0.3rem;
+    }
+    .stat-divider { width: 1px; background: var(--border); }
+
+    /* ── HOW TO PLAY ── */
+    #how-to-play {
+      padding: 8rem 2rem;
+      background:
+        linear-gradient(to bottom, var(--bg), var(--surface) 40%, var(--bg));
+      position: relative;
+    }
+    #how-to-play::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0; height: 1px;
+      background: linear-gradient(to right, transparent, var(--accent), var(--accent2), transparent);
+    }
+
+    .section-tag {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.62rem; letter-spacing: 0.5em;
+      text-transform: uppercase; color: var(--accent);
+      text-align: center; margin-bottom: 0.6rem;
+    }
+    .section-heading {
+      font-family: 'DM Serif Display', serif;
+      font-size: clamp(2rem, 4vw, 3.2rem);
+      text-align: center; color: var(--text);
+      line-height: 1.1;
+    }
+    .section-heading em { font-style: italic; color: var(--accent); }
+    .rule { width: 40px; height: 2px; background: var(--accent); margin: 1rem auto 3.5rem; }
+
+    .steps-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1.5px; max-width: 1040px; margin: 0 auto;
+      border: 1px solid var(--border);
+    }
+    .step-card {
+      background: var(--panel);
+      padding: 2.2rem 1.8rem;
+      border: 1px solid var(--border);
+      position: relative; overflow: hidden;
+      transition: background 0.3s;
+    }
+    .step-card::after {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0; height: 2px;
+      background: linear-gradient(to right, var(--accent), var(--accent2));
+      transform: scaleX(0); transform-origin: left;
+      transition: transform 0.35s ease;
+    }
+    .step-card:hover::after { transform: scaleX(1); }
+    .step-card:hover { background: rgba(30,20,50,0.95); }
+
+    .step-index {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.58rem; letter-spacing: 0.3em; color: var(--muted);
+      text-transform: uppercase; margin-bottom: 1.2rem;
+    }
+    .step-glyph {
+      width: 44px; height: 44px; border-radius: 50%;
+      background: rgba(201,24,58,0.1); border: 1px solid rgba(201,24,58,0.2);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.2rem; margin-bottom: 1.2rem;
+    }
+    .step-card h3 {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.1rem; color: var(--text); margin-bottom: 0.7rem;
+    }
+    .step-card p { font-size: 0.83rem; line-height: 1.75; color: var(--muted); }
+
+    /* ── TEAM ── */
+    #team {
+      padding: 8rem 2rem;
+      background: var(--bg);
+      position: relative;
+    }
+    #team::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0; height: 1px;
+      background: linear-gradient(to right, transparent, var(--accent2), var(--accent), transparent);
+    }
+
+    .team-grid {
+      display: flex; justify-content: center; gap: 2.5rem; flex-wrap: wrap;
+      max-width: 760px; margin: 0 auto;
+    }
+
+    .member-card {
+      width: 300px;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      position: relative; overflow: hidden;
+      transition: transform 0.3s, border-color 0.3s;
+    }
+    .member-card:hover { transform: translateY(-8px); border-color: rgba(124,60,255,0.3); }
+
+    /* accent bar */
+    .member-card::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0; height: 3px;
+      background: linear-gradient(to right, var(--accent), var(--accent2));
+    }
+
+    /* photo area */
+    .member-photo {
+      width: 100%; aspect-ratio: 1 / 1;
+      background: linear-gradient(135deg, #1a0d2e, #0d0812);
+      display: flex; align-items: center; justify-content: center;
+      position: relative; overflow: hidden;
+    }
+    .member-photo img {
+      width: 100%; height: 100%; object-fit: cover;
+      display: block;
+    }
+    /* shown only when no img child */
+    .photo-placeholder {
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center; gap: 0.6rem;
+    }
+    .member-photo:has(img) .photo-placeholder { display: none; }
+    .avatar-initials {
+      font-family: 'DM Serif Display', serif;
+      font-size: 3.5rem; color: rgba(124,60,255,0.3);
+      line-height: 1;
+    }
+    .photo-hint {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.58rem; letter-spacing: 0.25em;
+      text-transform: uppercase; color: var(--dim);
+    }
+
+    .member-info { padding: 1.5rem 1.6rem; }
+    .member-name {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.2rem; color: var(--text); margin-bottom: 0.2rem;
+    }
+    .member-role {
+      font-family: 'Space Mono', monospace;
+      font-size: 0.62rem; letter-spacing: 0.2em;
+      text-transform: uppercase; color: var(--accent);
+      margin-bottom: 1.1rem;
+    }
+    .member-github {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      padding: 0.45rem 1rem;
+      border: 1px solid var(--dim);
+      color: var(--muted); text-decoration: none;
+      font-family: 'Space Mono', monospace;
+      font-size: 0.65rem; letter-spacing: 0.1em;
+      transition: color 0.25s, border-color 0.25s;
+    }
+    .member-github:hover { color: var(--text); border-color: rgba(124,60,255,0.5); }
+    .member-github svg { width: 13px; height: 13px; fill: currentColor; flex-shrink: 0; }
+
+    /* ── FOOTER ── */
+    footer {
+      text-align: center;
+      padding: 2.5rem 2rem;
+      border-top: 1px solid var(--border);
+      font-family: 'Space Mono', monospace;
+      font-size: 0.65rem; letter-spacing: 0.2em;
+      color: var(--dim);
+    }
+    footer span { color: var(--accent); }
+
+    /* ── SCROLL FADE ── */
+    .reveal { opacity: 0; transform: translateY(28px); transition: opacity 0.7s ease, transform 0.7s ease; }
+    .reveal.visible { opacity: 1; transform: none; }
   </style>
 </head>
 <body>
+
   <nav>
     <a href="#home" class="nav-logo">Immune Defense</a>
     <ul class="nav-links">
       <li><a href="#home">Home</a></li>
-      <li><a href="#how-to-play">How To Play</a></li>
+      <li><a href="#how-to-play">How to Play</a></li>
       <li><a href="#team">Team</a></li>
     </ul>
   </nav>
+
+  <!-- HERO -->
   <section id="home">
-    <div class="particles" id="particles"></div>
-    <div class="hero-icon">🛡️</div>
-    <h1 class="hero-title"><span>Immune</span><span>Defense</span></h1>
-    <p class="hero-sub">Tower Defense · Immunology</p>
-    <div class="hero-buttons">
-      <a href="./game/" class="btn-play">▶ &nbsp;Play Now</a>
-      <a href="#how-to-play" class="btn-outline">How To Play</a>
+    <div class="hero-bg"></div>
+    <div class="rings">
+      <div class="ring"></div>
+      <div class="ring"></div>
+      <div class="ring"></div>
+      <div class="ring"></div>
+    </div>
+    <div class="motes" id="motes"></div>
+
+    <p class="hero-eyebrow">Tower Defense · Immunology</p>
+    <h1 class="hero-title">
+      <span class="line1">Immune</span>
+      <span class="line2">Defense</span>
+    </h1>
+    <p class="hero-desc">
+      Command the human body's immune system against an escalating barrage of pathogens. Deploy leukocytes, manage inflammation, and survive seven brutal waves.
+    </p>
+    <div class="hero-cta">
+      <a href="./game/" class="btn-primary">
+        <svg width="10" height="12" viewBox="0 0 10 12" fill="currentColor"><path d="M0 0l10 6-10 6z"/></svg>
+        Play Now
+      </a>
+      <a href="#how-to-play" class="btn-ghost">How to Play</a>
+    </div>
+
+    <div class="hero-stats">
+      <div class="stat">
+        <div class="stat-num">7</div>
+        <div class="stat-label">Waves</div>
+      </div>
+      <div class="stat-divider"></div>
+      <div class="stat">
+        <div class="stat-num">8</div>
+        <div class="stat-label">Defenders</div>
+      </div>
+      <div class="stat-divider"></div>
+      <div class="stat">
+        <div class="stat-num">6</div>
+        <div class="stat-label">Pathogens</div>
+      </div>
+      <div class="stat-divider"></div>
+      <div class="stat">
+        <div class="stat-num">5</div>
+        <div class="stat-label">Lanes</div>
+      </div>
     </div>
   </section>
+
+  <!-- HOW TO PLAY -->
   <section id="how-to-play">
-    <p class="section-label">Gameplay Guide</p>
-    <h2 class="section-title">How to <em>Play</em></h2>
-    <div class="divider"></div>
+    <p class="section-tag reveal">Gameplay Guide</p>
+    <h2 class="section-heading reveal">How to <em>Play</em></h2>
+    <div class="rule reveal"></div>
     <div class="steps-grid">
-      <div class="step-card"><div class="step-num">01</div><div class="step-icon">🦠</div><h3>Know Your Enemy</h3><p>Waves of pathogens — bacteria and viruses — are invading the body. They travel along a fixed path trying to reach the bloodstream.</p></div>
-      <div class="step-card"><div class="step-num">02</div><div class="step-icon">🛡️</div><h3>Deploy Defenses</h3><p>Place immune cells along the path to stop the invaders. Each cell type has unique abilities — use them wisely to hold the line.</p></div>
-      <div class="step-card"><div class="step-num">03</div><div class="step-icon">⚡</div><h3>Earn &amp; Upgrade</h3><p>Defeating pathogens earns you resources. Spend them to place more immune cells or upgrade existing ones to handle tougher waves.</p></div>
-      <div class="step-card"><div class="step-num">04</div><div class="step-icon">❤️</div><h3>Protect the Body</h3><p>You have limited health points. If too many pathogens break through, the body gets sick. Survive all waves to win!</p></div>
+      <div class="step-card reveal">
+        <div class="step-index">01 — Threat</div>
+        <div class="step-glyph">🦠</div>
+        <h3>Know Your Enemy</h3>
+        <p>Six pathogen types invade across five arterial lanes — from fast fragile viruses to the devastating Prion. Each has distinct speed, HP, and damage.</p>
+      </div>
+      <div class="step-card reveal">
+        <div class="step-index">02 — Placement</div>
+        <div class="step-glyph">🛡️</div>
+        <h3>Deploy Defenders</h3>
+        <p>Select a cell card from the HUD and click an empty grid tile to place it. Eight immune cell types offer unique roles — shooters, devourers, mines, and more.</p>
+      </div>
+      <div class="step-card reveal">
+        <div class="step-index">03 — Economy</div>
+        <div class="step-glyph">⚡</div>
+        <h3>Manage ATP</h3>
+        <p>Stem Cells generate ATP drops — click them to collect. Defeating pathogens earns bonus ATP. Spend wisely; over-committing early leaves you exposed later.</p>
+      </div>
+      <div class="step-card reveal">
+        <div class="step-index">04 — Strategy</div>
+        <div class="step-glyph">🔥</div>
+        <h3>Avoid Inflammation</h3>
+        <p>Stack 3+ defenders in one lane and it ignites — pathogens slow down, but Stem Cell output halves. Spread your forces or pay the metabolic price.</p>
+      </div>
     </div>
   </section>
+
+  <!-- TEAM -->
   <section id="team">
-    <p class="section-label">The Developers</p>
-    <h2 class="section-title">Meet the <em>Team</em></h2>
-    <div class="divider"></div>
+    <p class="section-tag reveal">The Developers</p>
+    <h2 class="section-heading reveal">Meet the <em>Team</em></h2>
+    <div class="rule reveal"></div>
     <div class="team-grid">
-      <div class="member-card">
-        <div class="member-avatar">IA</div>
-        <p class="member-name">Ma. Isabella Arce</p>
-        <p class="member-role">Game Developer</p>
-        <a href="https://github.com/isabelalalala" class="member-github" target="_blank">
-          <svg viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
-          @isabelalalala
-        </a>
+
+      <!-- MEMBER 1 — swap the src below with the actual photo path -->
+      <div class="member-card reveal">
+        <div class="member-photo">
+          <!-- <img src="./photos/isabella.jpg" alt="Ma. Isabella Arce" /> -->
+          <div class="photo-placeholder">
+            <div class="avatar-initials">IA</div>
+            <div class="photo-hint">Add Photo</div>
+          </div>
+        </div>
+        <div class="member-info">
+          <p class="member-name">Ma. Isabella Arce</p>
+          <p class="member-role">UI/UX &amp; Frontend Designer</p>
+          <a href="https://github.com/isabelalalala" class="member-github" target="_blank">
+            <svg viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
+            @isabelalalala
+          </a>
+        </div>
       </div>
-      <div class="member-card">
-        <div class="member-avatar">GA</div>
-        <p class="member-name">Gianna Ainza</p>
-        <p class="member-role">Game Developer</p>
-        <a href="https://github.com/gianainza" class="member-github" target="_blank">
-          <svg viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
-          @gianainza
-        </a>
+
+      <!-- MEMBER 2 -->
+      <div class="member-card reveal">
+        <div class="member-photo">
+          <!-- <img src="./photos/gianna.jpg" alt="Gianna Ainza" /> -->
+          <div class="photo-placeholder">
+            <div class="avatar-initials">GA</div>
+            <div class="photo-hint">Add Photo</div>
+          </div>
+        </div>
+        <div class="member-info">
+          <p class="member-name">Gianna Ainza</p>
+          <p class="member-role">Lead Developer &amp; Game Designer</p>
+          <a href="https://github.com/gianainza" class="member-github" target="_blank">
+            <svg viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
+            @gianainza
+          </a>
+        </div>
       </div>
+
     </div>
   </section>
-  <footer><p>© 2026 <span>Immune Defense</span> &nbsp;·&nbsp; Tower Defense · Immunology</p></footer>
+
+  <footer>
+    <p>© 2026 <span>Immune Defense</span> &nbsp;·&nbsp; UPHSD Molino — College of Computer Studies</p>
+  </footer>
+
   <script>
-    const container = document.getElementById('particles');
-    const colors = ['#c0152a','#e8182f','#ff6b6b','#4488ff','#ffaa44','#88ff88'];
-    for (let i = 0; i < 30; i++) {
-      const p = document.createElement('div');
-      p.className = 'particle';
-      const size = Math.random() * 6 + 3;
-      p.style.cssText = `width:${size}px;height:${size}px;left:${Math.random()*100}%;background:${colors[Math.floor(Math.random()*colors.length)]};animation-duration:${Math.random()*12+8}s;animation-delay:${Math.random()*10}s;`;
-      container.appendChild(p);
+    /* motes */
+    const moteColors = ['#c9183a','#7c3cff','#e8b84b','#ff6b8a','#6b9fff'];
+    const mc = document.getElementById('motes');
+    for (let i = 0; i < 35; i++) {
+      const m = document.createElement('div');
+      m.className = 'mote';
+      const s = Math.random() * 5 + 2;
+      m.style.cssText = `
+        width:${s}px;height:${s}px;
+        left:${Math.random()*100}%;
+        top:${40 + Math.random()*50}%;
+        background:${moteColors[Math.floor(Math.random()*moteColors.length)]};
+        animation-duration:${Math.random()*10+7}s;
+        animation-delay:${Math.random()*12}s;
+      `;
+      mc.appendChild(m);
     }
+
+    /* scroll reveal */
+    const obs = new IntersectionObserver((entries) => {
+      entries.forEach((e, i) => {
+        if (e.isIntersecting) {
+          e.target.style.transitionDelay = (i * 0.08) + 's';
+          e.target.classList.add('visible');
+          obs.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.12 });
+    document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
   </script>
 </body>
 </html>
