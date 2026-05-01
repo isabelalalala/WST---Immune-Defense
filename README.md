@@ -99,8 +99,14 @@ npm run preview
 | Platelets | 125 | Clots the entire lane in fire (single-use) |
 
 ### Pathogens
-
-Parasites, Protozoa, Fungi, Prokaryotes, Viruses, and Prions — each with unique HP, speed, and damage.
+| Pathogens | Threat Level | Description | Base Stats |
+|------|------|------|
+| Prokaryote | LOW | Fast rod-shaped bacteria with flagella. Weak but arrives in swarms early on| HP: 150 | SPD: 22 | DMG: 6 |
+| Virus | LOW| Spiky icosahedral particle — the fastest pathogen. Fragile but dangerously quick | HP: 120 | SPD: 28 | DMG: 8 |
+| Parasite | MEDIUM| Segmented worm that wiggles through your defenses at moderate speed| HP: 200 | SPD: 18 | DMG: 8 |
+| Protozoa | MEDIUM| Amoeba-like blob with pseudopods. Harder to kill and hits reasonably hards | HP: 280 | SPD: 14 | DMG: 10 |
+| Fungi | HIGH | Mushroom-shaped invader with high HP. Slow but absorbs a lot of punishment | HP: 380 | SPD: 12 | DMG: 12 |
+| Prion | EXTREAM| BMisfolded protein cluster — the final boss. Massive HP and crushing damage | HP: 600 | SPD: 10 | DMG: 18 |
 
 ## Project Structure
 
