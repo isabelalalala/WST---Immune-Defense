@@ -43,6 +43,18 @@ npm run preview
 - **Inflammation:** if you place 3+ defenders in a single lane, that lane becomes inflamed. Pathogens slow down inside it, but Stem Cells in inflamed lanes generate ATP at half speed. Plan your placement.
 - Survive all 7 waves to win.
 
+## Controls
+
+| Action | Control |
+|:--- |:--- |
+| **Select Defender** | Click a card in the bottom HUD |
+| **Place Defender** | Click an empty grid cell (after selecting a card) |
+| **Collect ATP** | Click on falling/floating ATP crystals |
+| **Pause Game** |  Click the Menu button |
+| **Mute/Unmute** | Managed via the Settings menu |
+
+**Pro-Tip:** You can collect multiple ATP drops at once by clicking near clusters of crystals.
+
 ### Defenders
 
 | Cell | Cost | Role |
