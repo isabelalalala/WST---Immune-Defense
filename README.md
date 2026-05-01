@@ -64,7 +64,7 @@ npm run build
 npm run preview
 ```
 
-## How to Play
+## 📖 How to Play
 
 - **Goal:** Stop pathogens from reaching the left edge of the screen.
 - **ATP** is your currency. Place **Stem Cells** to generate ATP drops — click them to collect.
@@ -85,20 +85,20 @@ npm run preview
 
 **Pro-Tip:** You can collect multiple ATP drops at once by clicking near clusters of crystals.
 
-### Defenders
+### 🛡 Defenders
 
 | Cell | Cost | Role |
-|------|------|------|
-| Stem Cell | 50 | Generates ATP drops |
-| Neutrophil | 100 | Shoots antibodies forward |
-| Eosinophil | 150 | Devours pathogens up close |
-| Basophil | 175 | Releases damaging spore clouds |
-| Monocyte | 50 | Squashes the first pathogen in lane (single-use) |
-| T Cell | 25 | Buried mine, detonates on contact |
-| B Cell | 325 | Fires antibodies in 3 lanes simultaneously |
-| Platelets | 125 | Clots the entire lane in fire (single-use) |
+| :--- | :--- | :--- |
+| **Stem Cell** | 50 | Generates ATP drops |
+| **Neutrophil** | 100 | Shoots antibodies forward |
+| **Eosinophil** | 150 | Devours pathogens up close |
+| **Basophil** | 175 | Releases damaging spore clouds |
+| **Monocyte** | 50 | Squashes the first pathogen in lane (single-use) |
+| **T Cell** | 25 | Buried mine, detonates on contact |
+| **B Cell** | 325 | Fires antibodies in 3 lanes simultaneously |
+| **Platelets** | 125 | Clots the entire lane in fire (single-use) |
 
-### Pathogens
+### 🦠 Pathogens
 | Pathogen | Threat Level | Description | Base Stats |
 | :--- | :--- | :--- | :--- |
 | **Prokaryote** | **LOW** | Fast rod-shaped bacteria with flagella. Weak but arrives in swarms early on. | HP: 150 \| SPD: 22 \| DMG: 6 |
