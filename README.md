@@ -6,15 +6,45 @@ Built with React, TypeScript, Vite, Tailwind CSS, and HTML5 Canvas.
 
 ## Game Preview
 
-| Main Menu | Strategic Defense |
-|:---:|:---:|
-| ![Main Menu](./pictures/main_menu.png) | ![Gameplay](./pictures/gameplay.png) |
-| *Dynamic menu with canvas animations* | *Active pathogen defense across 5 lanes* |
+<table>
+  <tr>
+    <th>Main Menu</th>
+    <th>Strategic Defense</th>
+  </tr>
+  <tr>
+    <td align="center">
+      <img src="./pictures/main_menu.png" width="400"/>
+    </td>
+    <td align="center">
+      <img src="./pictures/gameplay.png" width="400"/>
+    </td>
+  </tr>
+  <tr>
+    <td align="center"><em>Dynamic menu with canvas animations</em></td>
+    <td align="center"><em>Active pathogen defense across 5 lanes</em></td>
+  </tr>
+</table>
 
-| Inflammation Mechanic | How to Play |
-|:---:|:---:|
-| ![Inflammation](./pictures/inflammation.png) | ![Instructions](./pictures/instruction.png) |
-| *Strategic trade-offs in inflamed lanes* | *Clear in-game documentation* |
+<br/>
+
+<table>
+  <tr>
+    <th>Inflammation Mechanic</th>
+    <th>How to Play</th>
+  </tr>
+  <tr>
+    <td align="center">
+      <img src="./pictures/inflammation.png" width="400"/>
+    </td>
+    <td align="center">
+      <img src="./pictures/instruction.png" width="400"/>
+    </td>
+  </tr>
+  <tr>
+    <td align="center"><em>Strategic trade-offs in inflamed lanes</em></td>
+    <td align="center"><em>Clear in-game documentation</em></td>
+  </tr>
+</table>
 
 ## 🌟 Key Features
 
