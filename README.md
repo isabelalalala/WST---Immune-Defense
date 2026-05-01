@@ -134,30 +134,32 @@ Immune Defense offers three difficulty settings, selectable from the main menu. 
 .
 ├── .github/
 │   └── workflows/
-│       └── deploy.yml        # GitHub Actions deployment workflow
+│       └── deploy.yml           # GitHub Actions deployment workflow
 ├── game/
-│   └── index.html            # Game entry HTML
+│   └── index.html               # Game entry HTML
 ├── public/
 │   └── favicon.svg
-├── screenshots/
+├── pictures/
+│   ├── ainza.jpg
+│   ├── arce.jpg
 │   ├── gameplay.png
 │   ├── inflammation.png
 │   ├── instruction.png
 │   └── main_menu.png
 ├── src/
 │   ├── game/
-│   │   ├── Game.tsx          # React shell, HUD, defender deck, modals
-│   │   ├── audio.ts          # Sound effects of the game
-│   │   ├── config.ts         # Defender / pathogen stats, wave definitions
-│   │   ├── draw.ts           # Canvas rendering for everything
-│   │   ├── engine.ts         # Game loop, AI, collisions, inflammation
-│   │   └── types.ts          # State and entity types
-│   ├── App.tsx               # Root component
-│   ├── index.css             # Tailwind + theme + animations
-│   └── main.tsx              # React entry point
+│   │   ├── Game.tsx             # React shell, HUD, defender deck, modals
+│   │   ├── audio.ts             # Sound effects of the game
+│   │   ├── config.ts            # Defender / pathogen stats, wave definitions
+│   │   ├── draw.ts              # Canvas rendering for everything
+│   │   ├── engine.ts            # Game loop, AI, collisions, inflammation
+│   │   └── types.ts             # State and entity types
+│   ├── App.tsx                  # Root component
+│   ├── index.css                # Tailwind + theme + animations
+│   └── main.tsx                 # React entry point
 ├── .gitignore
 ├── README.md
-├── index.html
+├── index.html                   # Root HTML entry point
 ├── package-lock.json
 ├── package.json
 ├── tsconfig.json

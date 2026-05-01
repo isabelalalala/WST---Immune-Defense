@@ -16,6 +16,127 @@ import {
 } from "./draw";
 import { AlertTriangle, Zap, Heart, Shield, Syringe, Menu, X, Play, Pause, BookOpen, Settings2 } from "lucide-react";
 
+// ─── Animated background (same particles as landing page) ────────────────────
+interface CellParticle {
+  id: number; x: number; y: number; r: number;
+  color: string; speed: number; opacity: number; wobble: number;
+}
+
+function useCells(count = 20) {
+  const colors = ["#f5d76e","#e8e8f0","#9b59b6","#3498db","#e85a5a","#5a8c4f","#ff5e3a","#7d4f30"];
+  const ref = useRef<CellParticle[]>([]);
+  if (ref.current.length === 0) {
+    ref.current = Array.from({ length: count }, (_, i) => ({
+      id: i,
+      x: Math.random() * 100,
+      y: 10 + (i % 5) * 18 + Math.random() * 8,
+      r: 8 + Math.random() * 14,
+      color: colors[i % colors.length],
+      speed: 0.006 + Math.random() * 0.008,
+      opacity: 0.12 + Math.random() * 0.18,
+      wobble: Math.random() * Math.PI * 2,
+    }));
+  }
+  return ref.current;
+}
+
+function AnimatedBackground() {
+  const cells = useCells(20);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d")!;
+    let t = 0;
+    let raf = 0;
+
+    const resize = () => {
+      canvas.width = canvas.offsetWidth;
+      canvas.height = canvas.offsetHeight;
+    };
+    resize();
+    window.addEventListener("resize", resize);
+
+    const draw = () => {
+      const w = canvas.width;
+      const h = canvas.height;
+      t += 0.016;
+      ctx.clearRect(0, 0, w, h);
+
+      // Lane lines
+      for (let i = 0; i < 5; i++) {
+        const ly = (i / 4.5) * h * 0.9 + h * 0.05;
+        const grad = ctx.createLinearGradient(0, 0, w, 0);
+        grad.addColorStop(0, "transparent");
+        grad.addColorStop(0.3 + Math.sin(t * 0.4 + i) * 0.2, "rgba(180,30,50,0.09)");
+        grad.addColorStop(1, "transparent");
+        ctx.strokeStyle = grad;
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(0, ly);
+        ctx.lineTo(w, ly);
+        ctx.stroke();
+      }
+
+      // Moving cells
+      for (const cell of cells) {
+        cell.x += cell.speed;
+        if (cell.x > 110) cell.x = -10;
+        const cx = (cell.x / 100) * w;
+        const baseY = (cell.y / 100) * h;
+        const cy = baseY + Math.sin(t * 1.2 + cell.wobble) * 6;
+
+        // Glow
+        const grd = ctx.createRadialGradient(cx, cy, 0, cx, cy, cell.r * 2.5);
+        grd.addColorStop(0, cell.color + "33");
+        grd.addColorStop(1, "transparent");
+        ctx.fillStyle = grd;
+        ctx.beginPath();
+        ctx.ellipse(cx, cy, cell.r * 2.5, cell.r * 2, 0, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Body
+        ctx.globalAlpha = cell.opacity + Math.sin(t * 1.5 + cell.wobble) * 0.04;
+        ctx.fillStyle = cell.color;
+        ctx.beginPath();
+        ctx.ellipse(cx, cy, cell.r, cell.r * 0.78, t * 0.3 + cell.wobble, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Nucleus
+        ctx.globalAlpha = cell.opacity * 0.5;
+        ctx.fillStyle = "#00000044";
+        ctx.beginPath();
+        ctx.ellipse(cx - cell.r * 0.15, cy - cell.r * 0.1, cell.r * 0.35, cell.r * 0.28, 0, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.globalAlpha = 1;
+      }
+
+      // Vignette
+      const vig = ctx.createRadialGradient(w / 2, h / 2, h * 0.2, w / 2, h / 2, h * 0.9);
+      vig.addColorStop(0, "transparent");
+      vig.addColorStop(1, "rgba(0,0,0,0.5)");
+      ctx.fillStyle = vig;
+      ctx.fillRect(0, 0, w, h);
+
+      raf = requestAnimationFrame(draw);
+    };
+
+    draw();
+    return () => {
+      cancelAnimationFrame(raf);
+      window.removeEventListener("resize", resize);
+    };
+  }, [cells]);
+
+  return (
+    <canvas
+      ref={canvasRef}
+      style={{ position: "absolute", inset: 0, width: "100%", height: "100%", pointerEvents: "none" }}
+    />
+  );
+}
+
 export function Game({ onMainMenu }: { onMainMenu?: () => void }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const stateRef = useRef<GameState>(createInitialState());
@@ -250,7 +371,11 @@ export function Game({ onMainMenu }: { onMainMenu?: () => void }) {
       </header>
 
       {/* Main play area */}
-      <div className="flex-1 flex items-center justify-center relative overflow-hidden" style={{ minHeight: 0 }}>
+      <div className="flex-1 flex items-center justify-center relative overflow-hidden" style={{ minHeight: 0, background: "linear-gradient(160deg,#1a0308 0%,#2a0808 50%,#160210 100%)" }}>
+        {/* Animated particle background fills the side panels */}
+        <AnimatedBackground />
+        {/* Subtle scanlines */}
+        <div style={{ position: "absolute", inset: 0, pointerEvents: "none", zIndex: 1, backgroundImage: "repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(0,0,0,0.018) 3px,rgba(0,0,0,0.018) 4px)" }} />
         <div
           className="relative"
           style={{
@@ -258,6 +383,7 @@ export function Game({ onMainMenu }: { onMainMenu?: () => void }) {
             height: "100%",
             width: "auto",
             maxWidth: "100%",
+            zIndex: 2,
           }}
         >
           <canvas
