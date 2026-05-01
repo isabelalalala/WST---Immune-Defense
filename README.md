@@ -8,12 +8,12 @@ Built with React, TypeScript, Vite, Tailwind CSS, and HTML5 Canvas.
 
 | Main Menu | Strategic Defense |
 |:---:|:---:|
-| ![Main Menu](picture/main_menu.png) | ![Gameplay](picture/gameplay.png) |
+| ![Main Menu](./pictures/main_menu.png) | ![Gameplay](./pictures/gameplay.png) |
 | *Dynamic menu with canvas animations* | *Active pathogen defense across 5 lanes* |
 
 | Inflammation Mechanic | How to Play |
 |:---:|:---:|
-| ![Inflammation](picture/inflammation.png) | ![Instructions](picture/instruction.png) |
+| ![Inflammation](./pictures/inflammation.png) | ![Instructions](./pictures/instruction.png) |
 | *Strategic trade-offs in inflamed lanes* | *Clear in-game documentation* |
 
 ## 🌟 Key Features
