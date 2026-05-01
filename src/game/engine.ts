@@ -561,14 +561,37 @@ export function collectAtp(s: GameState, dropId: number) {
 }
 
 export function clickAtCanvas(s: GameState, x: number, y: number): { collected: boolean } {
-  // Try to collect ATP drop
+  // Try to collect ATP drop(s) within click radius
+  const toCollect: AtpDrop[] = [];
   for (const drop of s.drops) {
     const dx = x - drop.x;
     const dy = y - drop.y;
-    if (dx * dx + dy * dy < 400) {
-      collectAtp(s, drop.id);
-      return { collected: true };
+    // Increased detection radius to 35px (1225 squared) for better multi-collect reliability
+    if (dx * dx + dy * dy < 1225) {
+      toCollect.push(drop);
     }
+  }
+  
+  if (toCollect.length > 0) {
+    const idsToFilter = new Set(toCollect.map(d => d.id));
+    
+    for (const drop of toCollect) {
+      s.atp += drop.amount;
+      s.effects.push({
+        id: id(),
+        type: "atp",
+        x: drop.x,
+        y: drop.y,
+        age: 0,
+        duration: 700,
+        color: "#ffd700",
+        text: `${drop.amount}`,
+      });
+    }
+    
+    s.drops = s.drops.filter((d) => !idsToFilter.has(d.id));
+    try { playSound("collect"); } catch (e) {}
+    return { collected: true };
   }
 
   if (!s.selectedType) return { collected: false };
