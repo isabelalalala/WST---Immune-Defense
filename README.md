@@ -112,33 +112,39 @@ npm run preview
 
 ```
 .
-├── index.html
-├── package.json
-├──package-lock.json
-├── tsconfig.json
-├── vite.config.ts
-├── gitignore
+├── .github/
+│   └── workflows/
+│       └── deploy.yml        # GitHub Actions deployment workflow
+├── game/
+│   └── index.html            # Game entry HTML
 ├── public/
 │   └── favicon.svg
-├── screenshots
-    ├──main_menu.png
-    ├──gameplay.png
-    ├──inflammation.png
-    └──instruction.png
-└── src/
-    ├── main.tsx          # React entry point
-    ├── App.tsx           # Root component
-    ├── index.css         # Tailwind + theme + animations
-    └── game/
-        ├── types.ts      # State and entity types
-        ├── audio.ts      # Sound effects of the game
-        ├── config.ts     # Defender / pathogen stats, wave definitions
-        ├── draw.ts       # Canvas rendering for everything
-        ├── engine.ts     # Game loop, AI, collisions, inflammation
-        └── Game.tsx      # React shell, HUD, defender deck, modals
+├── screenshots/
+│   ├── gameplay.png
+│   ├── inflammation.png
+│   ├── instruction.png
+│   └── main_menu.png
+├── src/
+│   ├── game/
+│   │   ├── Game.tsx          # React shell, HUD, defender deck, modals
+│   │   ├── audio.ts          # Sound effects of the game
+│   │   ├── config.ts         # Defender / pathogen stats, wave definitions
+│   │   ├── draw.ts           # Canvas rendering for everything
+│   │   ├── engine.ts         # Game loop, AI, collisions, inflammation
+│   │   └── types.ts          # State and entity types
+│   ├── App.tsx               # Root component
+│   ├── index.css             # Tailwind + theme + animations
+│   └── main.tsx              # React entry point
+├── .gitignore
+├── README.md
+├── index.html
+├── package-lock.json
+├── package.json
+├── tsconfig.json
+└── vite.config.ts
 ```
 
-All game logic lives in `src/game/`. Rendering is pure HTML5 Canvas no game framework.
+All game logic lives in `src/game/`. Rendering is pure HTML5 Canvas — no game framework.
 
 ## 👥 The Team
 
