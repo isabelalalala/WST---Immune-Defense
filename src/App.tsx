@@ -445,7 +445,6 @@ function PathogenMiniIcon({ type }: { type: string }) {
 }
 
 
-// ─── Help Page ────────────────────────────────────────────────────────────────
 function HelpPage({ onBack }: { onBack: () => void }) {
   const [visible, setVisible] = useState(false);
   useEffect(() => { const t = setTimeout(() => setVisible(true), 60); return () => clearTimeout(t); }, []);
@@ -463,37 +462,37 @@ function HelpPage({ onBack }: { onBack: () => void }) {
 
   const pathogens = [
     {
-      type: "prokaryote", name: "Prokaryote", color: "#27ae60", accentColor: "#52be80",
+      type: "prokaryote", name: "Prokaryote", color: "#27ae60",
       hp: 150, speed: 22, damage: 6,
       desc: "Fast rod-shaped bacteria with flagella. Weak but arrives in swarms early on.",
       threat: "low",
     },
     {
-      type: "virus", name: "Virus", color: "#c0392b", accentColor: "#e74c3c",
+      type: "virus", name: "Virus", color: "#c0392b",
       hp: 120, speed: 28, damage: 8,
       desc: "Spiky icosahedral particle — the fastest pathogen. Fragile but dangerously quick.",
       threat: "low",
     },
     {
-      type: "parasite", name: "Parasite", color: "#8b4789", accentColor: "#b87cb6",
+      type: "parasite", name: "Parasite", color: "#8b4789",
       hp: 200, speed: 18, damage: 8,
       desc: "Segmented worm that wiggles through your defenses at moderate speed.",
       threat: "medium",
     },
     {
-      type: "protozoa", name: "Protozoa", color: "#5a7d2a", accentColor: "#8eaf4e",
+      type: "protozoa", name: "Protozoa", color: "#5a7d2a",
       hp: 280, speed: 14, damage: 10,
       desc: "Amoeba-like blob with pseudopods. Harder to kill and hits reasonably hard.",
       threat: "medium",
     },
     {
-      type: "fungi", name: "Fungi", color: "#c08552", accentColor: "#e0a878",
+      type: "fungi", name: "Fungi", color: "#c08552",
       hp: 380, speed: 12, damage: 12,
       desc: "Mushroom-shaped invader with high HP. Slow but absorbs a lot of punishment.",
       threat: "high",
     },
     {
-      type: "prion", name: "Prion", color: "#34495e", accentColor: "#5d6d7e",
+      type: "prion", name: "Prion", color: "#34495e",
       hp: 600, speed: 10, damage: 18,
       desc: "Misfolded protein cluster — the final boss. Massive HP, crushing damage, and a pulsing core that resists most attacks.",
       threat: "extreme",
@@ -522,7 +521,6 @@ function HelpPage({ onBack }: { onBack: () => void }) {
       position: "relative", overflow: "hidden", padding: "1.5rem",
       fontFamily: "system-ui, sans-serif",
     }}>
-      <style>{`::-webkit-scrollbar{width:6px}::-webkit-scrollbar-track{background:rgba(20,2,6,0.8);border-radius:999px}::-webkit-scrollbar-thumb{background:linear-gradient(180deg,#aa2233,#6b0011);border-radius:999px}::-webkit-scrollbar-thumb:hover{background:linear-gradient(180deg,#cc3344,#880016)}body{scrollbar-width:thin;scrollbar-color:#aa2233 rgba(20,2,6,0.8)}`}</style>
       <AnimatedBackground />
       <div style={{
         position: "relative", zIndex: 10,
@@ -539,7 +537,6 @@ function HelpPage({ onBack }: { onBack: () => void }) {
         marginBottom: "1rem",
         overflow: "hidden",
       }}>
-        {/* Header band */}
         <div style={{
           padding: "1.25rem 1.5rem",
           background: "rgba(25,4,8,0.8)",
@@ -552,110 +549,115 @@ function HelpPage({ onBack }: { onBack: () => void }) {
           }}>HOW TO PLAY</div>
         </div>
 
-        <div style={{ padding: "2.5rem" }}>
-
-        {/* Core rules */}
-        <div style={{ color: "#bb8899", fontSize: "0.92rem", lineHeight: 1.7, marginBottom: "1.75rem" }}>
-          <p style={{ marginBottom: "0.6rem" }}>
-            <span style={{ color: "#ff6677", fontWeight: 700 }}>Goal: </span>
-            Defend your body from pathogens by placing immune cells across 5 artery lanes.
-          </p>
-          <p style={{ marginBottom: "0.6rem" }}>
-            <span style={{ color: "#fbbf24", fontWeight: 700 }}>ATP: </span>
-            Your currency — earned over time and by defeating pathogens. Click ATP drops to collect them!
-          </p>
-          <p>
-            <span style={{ color: "#fb923c", fontWeight: 700 }}>⚠ Inflammation: </span>
-            Place 3+ defenders in one lane and it becomes inflamed — pathogens slow, but Stem Cells generate ATP at half speed.
-          </p>
-        </div>
-
-        {/* Defenders */}
-        <div style={{ marginBottom: "2rem" }}>
-          <div style={{
-            color: "#ff6677", fontWeight: 800, fontSize: "1rem",
-            letterSpacing: "0.12em", textTransform: "uppercase",
-            marginBottom: "1rem", borderBottom: "1px solid #4a1020", paddingBottom: "0.4rem",
-          }}>🛡 Defenders</div>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(185px, 1fr))", gap: "0.75rem" }}>
-            {defenders.map((d) => (
-              <div key={d.type} style={card}>
-                <DefenderMiniIcon type={d.type} />
-                <div style={{ textAlign: "center" }}>
-                  <div style={{ color: "#fff", fontWeight: 700, fontSize: "0.88rem" }}>{d.name}</div>
-                  <div style={{ display: "flex", gap: "0.4rem", justifyContent: "center", margin: "0.25rem 0" }}>
-                    <span style={{ fontSize: "0.7rem", background: "#1a0e00", color: "#fbbf24", borderRadius: "0.3rem", padding: "1px 5px", border: "1px solid #7a4a00" }}>
-                      ⚡{d.cost} ATP
-                    </span>
-                    <span style={{ fontSize: "0.7rem", background: "#0a1a0a", color: "#4ade80", borderRadius: "0.3rem", padding: "1px 5px", border: "1px solid #1a4a1a" }}>
-                      ❤ {d.hp}
-                    </span>
-                  </div>
-                  <div style={{ color: "#886677", fontSize: "0.74rem", lineHeight: 1.4 }}>{d.desc}</div>
-                </div>
-              </div>
-            ))}
+        {/* This is the container that makes it scrollable */}
+        <div className="how-to-play-scroll-container" style={{ 
+            maxHeight: "80vh", 
+            overflowY: "auto", 
+            padding: "2.5rem" 
+        }}>
+          <div style={{ color: "#bb8899", fontSize: "0.92rem", lineHeight: 1.7, marginBottom: "1.75rem" }}>
+            <p style={{ marginBottom: "0.6rem" }}>
+              <span style={{ color: "#ff6677", fontWeight: 700 }}>Goal: </span>
+              Defend your body from pathogens by placing immune cells across 5 artery lanes
+            </p>
+            <p style={{ marginBottom: "0.6rem" }}>
+              <span style={{ color: "#fbbf24", fontWeight: 700 }}>ATP: </span>
+              Your currency — earned over time and by defeating pathogens. Click ATP drops to collect them!
+            </p>
+            <p>
+              <span style={{ color: "#e7522c", fontWeight: 700 }}>Inject: </span>
+              Remove a defender to recover half of its ATP cost.
+            </p>
+                        <p>
+              <span style={{ color: "#fb923c", fontWeight: 700 }}>⚠ Inflammation: </span>
+              Place 3+ defenders in one lane and it becomes inflamed — pathogens slow, but Stem Cells generate ATP at half speed.
+            </p>
           </div>
-        </div>
 
-        {/* Pathogens */}
-        <div style={{ marginBottom: "2rem" }}>
-          <div style={{
-            color: "#ff6677", fontWeight: 800, fontSize: "1rem",
-            letterSpacing: "0.12em", textTransform: "uppercase",
-            marginBottom: "1rem", borderBottom: "1px solid #4a1020", paddingBottom: "0.4rem",
-          }}>☣ Pathogens</div>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(240px, 1fr))", gap: "0.75rem" }}>
-            {pathogens.map((p) => (
-              <div key={p.type} style={{
-                ...card,
-                flexDirection: "row",
-                alignItems: "flex-start",
-                gap: "0.75rem",
-              }}>
-                <PathogenMiniIcon type={p.type} />
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: "0.4rem", marginBottom: "0.25rem" }}>
-                    <span style={{ color: "#fff", fontWeight: 700, fontSize: "0.88rem" }}>{p.name}</span>
-                    <span style={{
-                      fontSize: "0.62rem", fontWeight: 700, textTransform: "uppercase",
-                      letterSpacing: "0.08em", padding: "1px 5px", borderRadius: "0.3rem",
-                      background: threatColors[p.threat] + "22",
-                      color: threatColors[p.threat],
-                      border: `1px solid ${threatColors[p.threat]}55`,
-                    }}>{p.threat}</span>
+          <div style={{ marginBottom: "2rem" }}>
+            <div style={{
+              color: "#ff6677", fontWeight: 800, fontSize: "1rem",
+              letterSpacing: "0.12em", textTransform: "uppercase",
+              marginBottom: "1rem", borderBottom: "1px solid #4a1020", paddingBottom: "0.4rem",
+            }}>🛡 Defenders</div>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(185px, 1fr))", gap: "0.75rem" }}>
+              {defenders.map((d) => (
+                <div key={d.type} style={card}>
+                  <DefenderMiniIcon type={d.type} />
+                  <div style={{ textAlign: "center" }}>
+                    <div style={{ color: "#fff", fontWeight: 700, fontSize: "0.88rem" }}>{d.name}</div>
+                    <div style={{ display: "flex", gap: "0.4rem", justifyContent: "center", margin: "0.25rem 0" }}>
+                      <span style={{ fontSize: "0.7rem", background: "#1a0e00", color: "#fbbf24", borderRadius: "0.3rem", padding: "1px 5px", border: "1px solid #7a4a00" }}>
+                        ⚡{d.cost} ATP
+                      </span>
+                      <span style={{ fontSize: "0.7rem", background: "#0a1a0a", color: "#4ade80", borderRadius: "0.3rem", padding: "1px 5px", border: "1px solid #1a4a1a" }}>
+                        ❤ {d.hp}
+                      </span>
+                    </div>
+                    <div style={{ color: "#886677", fontSize: "0.74rem", lineHeight: 1.4 }}>{d.desc}</div>
                   </div>
-                  <div style={{ display: "flex", gap: "0.3rem", flexWrap: "wrap", marginBottom: "0.35rem" }}>
-                    <span style={{ fontSize: "0.68rem", background: "#0a1a0a", color: "#4ade80", borderRadius: "0.3rem", padding: "1px 4px", border: "1px solid #1a4a1a" }}>
-                      HP {p.hp}
-                    </span>
-                    <span style={{ fontSize: "0.68rem", background: "#0a0a1a", color: "#60a5fa", borderRadius: "0.3rem", padding: "1px 4px", border: "1px solid #1a1a4a" }}>
-                      SPD {p.speed}
-                    </span>
-                    <span style={{ fontSize: "0.68rem", background: "#1a0a0a", color: "#f87171", borderRadius: "0.3rem", padding: "1px 4px", border: "1px solid #4a1a1a" }}>
-                      DMG {p.damage}
-                    </span>
-                  </div>
-                  <div style={{ color: "#776677", fontSize: "0.74rem", lineHeight: 1.4 }}>{p.desc}</div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
-        </div>
 
-        <button
-          onClick={() => { playSound("ui_click"); onBack(); }}
-          style={{
-            width: "100%", padding: "0.9rem",
-            borderRadius: "1rem", fontWeight: 700, fontSize: "1rem",
-            letterSpacing: "0.12em", cursor: "pointer",
-            background: "linear-gradient(135deg,#7f1d1d,#5a0f0f)",
-            color: "#ffbbcc",
-            border: "2px solid #aa2233",
-            borderBottom: "5px solid #440a10",
-          }}
-        >← BACK</button>
-        </div>{/* end inner padding div */}
+          <div style={{ marginBottom: "2rem" }}>
+            <div style={{
+              color: "#ff6677", fontWeight: 800, fontSize: "1rem",
+              letterSpacing: "0.12em", textTransform: "uppercase",
+              marginBottom: "1rem", borderBottom: "1px solid #4a1020", paddingBottom: "0.4rem",
+            }}>☣ Pathogens</div>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(240px, 1fr))", gap: "0.75rem" }}>
+              {pathogens.map((p) => (
+                <div key={p.type} style={{
+                  ...card,
+                  flexDirection: "row",
+                  alignItems: "flex-start",
+                  gap: "0.75rem",
+                }}>
+                  <PathogenMiniIcon type={p.type} />
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: "0.4rem", marginBottom: "0.25rem" }}>
+                      <span style={{ color: "#fff", fontWeight: 700, fontSize: "0.88rem" }}>{p.name}</span>
+                      <span style={{
+                        fontSize: "0.62rem", fontWeight: 700, textTransform: "uppercase",
+                        letterSpacing: "0.08em", padding: "1px 5px", borderRadius: "0.3rem",
+                        background: threatColors[p.threat] + "22",
+                        color: threatColors[p.threat],
+                        border: `1px solid ${threatColors[p.threat]}55`,
+                      }}>{p.threat}</span>
+                    </div>
+                    <div style={{ display: "flex", gap: "0.3rem", flexWrap: "wrap", marginBottom: "0.35rem" }}>
+                      <span style={{ fontSize: "0.68rem", background: "#0a1a0a", color: "#4ade80", borderRadius: "0.3rem", padding: "1px 4px", border: "1px solid #1a4a1a" }}>
+                        HP {p.hp}
+                      </span>
+                      <span style={{ fontSize: "0.68rem", background: "#0a0a1a", color: "#60a5fa", borderRadius: "0.3rem", padding: "1px 4px", border: "1px solid #1a1a4a" }}>
+                        SPD {p.speed}
+                      </span>
+                      <span style={{ fontSize: "0.68rem", background: "#1a0a0a", color: "#f87171", borderRadius: "0.3rem", padding: "1px 4px", border: "1px solid #4a1a1a" }}>
+                        DMG {p.damage}
+                      </span>
+                    </div>
+                    <div style={{ color: "#776677", fontSize: "0.74rem", lineHeight: 1.4 }}>{p.desc}</div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <button
+            onClick={() => { playSound("ui_click"); onBack(); }}
+            style={{
+              width: "100%", padding: "0.9rem",
+              borderRadius: "1rem", fontWeight: 700, fontSize: "1rem",
+              letterSpacing: "0.12em", cursor: "pointer",
+              background: "linear-gradient(135deg,#7f1d1d,#5a0f0f)",
+              color: "#ffbbcc",
+              border: "2px solid #aa2233",
+              borderBottom: "5px solid #440a10",
+            }}
+          >← BACK</button>
+        </div>
       </div>
     </div>
   );
